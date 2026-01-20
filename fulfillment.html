@@ -129,7 +129,7 @@ body {
 .content-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 16px;
   min-height: 0;
@@ -165,22 +165,25 @@ body {
   min-height: 0;
 }
 
-/* ====== FILL RATE CHART (spans 2 rows) ====== */
-.fill-rate-section {
-  grid-row: span 2;
-}
-
-/* ====== ORDERS CHART ====== */
-.orders-section {
-  /* grid-row: 1; grid-column: 2; */
-}
-
-/* ====== DATA TABLE ====== */
+/* ====== DATA TABLE (spans 2 rows on LEFT) ====== */
 .table-section {
-  /* grid-row: 2; grid-column: 2; */
+  grid-row: span 2;
+  grid-column: 1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/* ====== FILL RATE CHART (top right) ====== */
+.fill-rate-section {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+/* ====== ORDERS CHART (bottom right) ====== */
+.orders-section {
+  grid-row: 2;
+  grid-column: 2;
 }
 
 .table-wrapper {
@@ -355,8 +358,20 @@ body {
     grid-template-rows: auto auto auto;
   }
   
-  .fill-rate-section {
+  .table-section {
     grid-row: span 1;
+    grid-column: 1;
+    min-height: 300px;
+  }
+  
+  .fill-rate-section {
+    grid-row: auto;
+    grid-column: 1;
+  }
+  
+  .orders-section {
+    grid-row: auto;
+    grid-column: 1;
   }
   
   .kpi-row {
@@ -461,21 +476,6 @@ body {
 
   <!-- MONTHLY VIEW -->
   <div class="content-grid monthly-view" data-view="monthly">
-    <div class="chart-card fill-rate-section">
-      <div class="chart-title">Daily Fill Rate Performance</div>
-      <div class="chart-subtitle">Target lines: 95% (7-day) • 85% (4-day)</div>
-      <div class="chart-wrapper">
-        <canvas id="fillRateChart"></canvas>
-      </div>
-    </div>
-
-    <div class="chart-card orders-section">
-      <div class="chart-title">Orders Remaining</div>
-      <div class="chart-wrapper">
-        <canvas id="ordersChart"></canvas>
-      </div>
-    </div>
-
     <div class="chart-card table-section">
       <div class="chart-title">Daily Data</div>
       <div class="table-wrapper">
@@ -492,6 +492,21 @@ body {
           </thead>
           <tbody id="dataTable"></tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="chart-card fill-rate-section">
+      <div class="chart-title">Daily Fill Rate Performance</div>
+      <div class="chart-subtitle">Target lines: 95% (7-day) • 85% (4-day)</div>
+      <div class="chart-wrapper">
+        <canvas id="fillRateChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card orders-section">
+      <div class="chart-title">Orders Remaining</div>
+      <div class="chart-wrapper">
+        <canvas id="ordersChart"></canvas>
       </div>
     </div>
   </div>
