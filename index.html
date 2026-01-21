@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RCO Metrics Dashboard</title>
 <style>
-/* =========================================
-   GLOBAL RESET
-========================================= */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 html, body {
   width: 100%;
@@ -24,574 +25,440 @@ body {
 }
 
 /* =========================================
-   HIDE TV VIEW BUTTON WHEN HEADER COLLAPSED
+   SIDEBAR NAVIGATION
 ========================================= */
-.main-nav.collapsed ~ .kiosk-btn {
-  display: none;
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 100%);
+  box-shadow: 2px 0 10px rgba(95, 75, 60, 0.1);
+  transform: translateX(-280px);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
 }
 
-/* =========================================
-   KIOSK MODE BUTTON (ENTER ONLY)
-========================================= */
-.kiosk-btn {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 10000;
-  background: #ffffff;
-  color: #5f4b3c;
-  border: 2px solid #d7d1ca;
-  padding: 10px 18px;
-  font-weight: 600;
-  border-radius: 10px;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 12px rgba(95, 75, 60, 0.18);
+.sidebar.open {
+  transform: translateX(0);
 }
+
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 2px solid #d7d1ca;
+  background: linear-gradient(135deg, #d7d1ca 0%, #bd9979 100%);
+}
+
+.sidebar-logo {
+  width: 100%;
+  max-width: 180px;
+  height: auto;
+  display: block;
+  margin: 0 auto 12px;
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.sidebar-title {
+  color: white;
+  font-size: 1.3em;
+  font-weight: 700;
+  text-align: center;
+  font-family: "Noto Serif", Georgia, "Times New Roman", Times, serif;
+  margin-bottom: 4px;
+}
+
+.sidebar-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85em;
+  text-align: center;
+  font-weight: 500;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 24px;
+  color: #5f4b3c;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+.nav-item:hover {
+  background: rgba(215, 209, 202, 0.2);
+  border-left-color: #bd9979;
+}
+
+.nav-item.active {
+  background: rgba(215, 209, 202, 0.3);
+  border-left-color: #5f4b3c;
+  color: #5f4b3c;
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  font-size: 1.2em;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid #d7d1ca;
+}
+
+.orders-widget {
+  background: linear-gradient(135deg, #d7d1ca 0%, #bd9979 100%);
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.orders-label {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  opacity: 0.95;
+}
+
+.orders-value {
+  font-size: 2.2em;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.orders-updated {
+  font-size: 0.65em;
+  opacity: 0.9;
+}
+
+.product-carousel {
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  border: 2px solid #d7d1ca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.product-carousel img {
+  max-width: 100%;
+  max-height: 60px;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.product-carousel img.fade-out {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
 .sign-out-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 10001;
+  width: 100%;
   background: white;
   color: #5f4b3c;
   border: 2px solid #d7d1ca;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.25s ease;
+  margin-top: 12px;
 }
 
 .sign-out-btn:hover {
   background: linear-gradient(135deg, #d7d1ca 0%, #bd9979 100%);
   color: white;
   border-color: #bd9979;
-  transform: translateY(-2px);
 }
 
-.main-nav.collapsed .sign-out-btn {
-  display: none;
-}
-.kiosk-btn:hover {
+/* =========================================
+   HAMBURGER BUTTON
+========================================= */
+.hamburger-btn {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  width: 50px;
+  height: 50px;
   background: linear-gradient(135deg, #d7d1ca 0%, #bd9979 100%);
-  color: #ffffff;
-  border-color: #bd9979;
-  transform: translateY(-2px);
-}
-
-.kiosk-btn:active {
-  transform: scale(0.96);
-}
-
-body.kiosk-active .kiosk-btn {
-  display: none;
-}
-
-/* =========================================
-   HEADER
-========================================= */
-.main-nav {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: linear-gradient(135deg, #ffffff 0%, #fbfaf8 100%);
-  border-bottom: 3px solid #bd9979;
-  transition: all 0.45s ease;
-}
-
-.main-nav.expanded {
-  padding: 18px 16px 44px;
-}
-
-.main-nav.collapsed {
-  height: 0;
-  padding: 0;
-  background: transparent;
-  border-bottom: none;
-  overflow: hidden;
-}
-
-body.kiosk-active .main-nav {
-  display: none;
-}
-
-/* =========================================
-   HEADER CONTENT
-========================================= */
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
-  transition: transform 0.45s ease, opacity 0.35s ease;
-}
-
-.main-nav.collapsed .header-content {
-  transform: translateY(-60px);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.title-wrap h1 {
-  color: #5f4b3c;
-  font-size: 1.9em;
-  font-weight: 700;
-  font-family: "Noto Serif", Georgia, "Times New Roman", Times, serif;
-}
-
-.title-wrap h2 {
-  color: #8d8173;
-  font-size: 1em;
-  font-weight: 600;
-  margin-top: 4px;
-  margin-bottom: 18px;
-}
-
-/* =========================================
-   NAV BUTTONS
-========================================= */
-.nav-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.nav-tab {
-  background: white;
-  color: #5f4b3c;
-  border: 2px solid #d7d1ca;
-  padding: 12px 26px;
+  border: none;
   border-radius: 10px;
-  font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow: 0 4px 12px rgba(95, 75, 60, 0.2);
+  transition: all 0.3s ease;
 }
 
-.nav-tab:hover {
-  background: #fbfaf8;
-  border-color: #bd9979;
+.hamburger-btn:hover {
+  box-shadow: 0 6px 16px rgba(95, 75, 60, 0.3);
   transform: translateY(-2px);
 }
 
-.nav-tab.active {
-  background: linear-gradient(135deg, #d7d1ca, #bd9979);
-  color: white;
+.hamburger-btn span {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
-/* =========================================
-   MEDIA LAYER - DESKTOP ONLY
-========================================= */
-.media-layer {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 1200px;
-  pointer-events: none;
-  display: none;
+.hamburger-btn.open span:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
 }
 
-@media (min-width: 1024px) {
-  .media-layer {
-    display: block;
-  }
-}
-
-.main-nav.collapsed .media-layer {
-  display: none;
-}
-
-/* =========================================
-   MOBILE HEADER LAYOUT
-========================================= */
-.mobile-header-row {
-  display: none;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  gap: 12px;
-}
-
-@media (max-width: 1023px) {
-  .mobile-header-row {
-    display: flex;
-  }
-  
-  .main-nav.expanded {
-    padding: 12px 16px 36px;
-  }
-}
-
-.mobile-logo {
-  height: 50px;
-  flex-shrink: 0;
-}
-
-.mobile-orders-counter {
-  flex: 1;
-  text-align: center;
-  min-width: 0;
-}
-
-.mobile-orders-label {
-  font-size: 0.65em;
-  font-weight: 600;
-  color: #5f4b3c;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 2px;
-}
-
-.mobile-orders-value {
-  font-size: 1.8em;
-  font-weight: 700;
-  color: #5f4b3c;
-  line-height: 1;
-  margin-bottom: 2px;
-}
-
-.mobile-orders-updated {
-  font-size: 0.55em;
-  color: #5f4b3c;
-  font-weight: 500;
-}
-
-.mobile-product {
-  height: 50px;
-  flex-shrink: 0;
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.mobile-product.fade-out {
+.hamburger-btn.open span:nth-child(2) {
   opacity: 0;
-  transform: scale(0.95);
+}
+
+.hamburger-btn.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
 }
 
 /* =========================================
-   LOGO (LEFT SIDE) - DESKTOP
+   MAIN CONTENT AREA
 ========================================= */
-.logo-media {
-  position: absolute;
-  left: -60px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
+.main-content {
+  width: 100%;
+  height: 100vh;
+  transition: margin-left 0.3s ease;
 }
 
-.logo-media img {
-  max-height: 85%;
+.sidebar.open ~ .main-content {
+  margin-left: 280px;
 }
 
 /* =========================================
-   TODAY'S ORDERS COUNTER (RIGHT OF LOGO) - DESKTOP
-========================================= */
-.orders-counter {
-  position: absolute;
-  left: 120px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  padding: 8px 0;
-  min-width: 140px;
-}
-
-.orders-counter-label {
-  font-size: 0.7em;
-  font-weight: 600;
-  color: #5f4b3c;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.orders-counter-value {
-  font-size: 2.8em;
-  font-weight: 700;
-  color: #5f4b3c;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.orders-counter-updated {
-  font-size: 0.6em;
-  color: #5f4b3c;
-  font-weight: 500;
-}
-
-.orders-counter.loading .orders-counter-value {
-  opacity: 0.5;
-}
-
-/* =========================================
-   PRODUCT MEDIA (RIGHT SIDE) - DESKTOP
-========================================= */
-.product-media {
-  position: absolute;
-  right: -60px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.product-label {
-  font-size: 0.85em;
-  font-weight: 600;
-  color: #5f4b3c;
-  text-transform: uppercase;
-}
-
-.product-media img {
-  max-height: 100%;
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.product-media img.fade-out {
-  opacity: 0;
-  transform: scale(0.95);
-}
-
-/* =========================================
-   HEADER TOGGLE ARROW
-========================================= */
-.nav-toggle-wrap {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%) translateY(-70%);
-  z-index: 2000;
-  cursor: pointer;
-}
-
-body.kiosk-active .nav-toggle-wrap {
-  position: fixed;
-  top: 8px;
-  left: 50%;
-  bottom: auto;
-  transform: translateX(-50%);
-  z-index: 10002;
-}
-
-.nav-toggle {
-  width: 0;
-  height: 0;
-  border-left: 16px solid transparent;
-  border-right: 16px solid transparent;
-  border-bottom: 18px solid #bd9979;
-  animation: bounce 2.4s infinite;
-}
-
-.nav-toggle::after {
-  content: "";
-  position: absolute;
-  left: -12px;
-  top: 3px;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-bottom: 14px solid white;
-}
-
-.main-nav.collapsed .nav-toggle-wrap {
-  position: fixed;
-  top: 8px;
-  left: 50%;
-  bottom: auto;
-  transform: translateX(-50%) rotate(180deg);
-  z-index: 10002;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
-
-/* =========================================
-   MOBILE RESPONSIVE ADJUSTMENTS
-========================================= */
-@media (max-width: 768px) {
-  .title-wrap h1 {
-    font-size: 1.4em;
-  }
-  
-  .title-wrap h2 {
-    font-size: 0.85em;
-  }
-  
-  .nav-tabs {
-    gap: 8px;
-  }
-  
-  .nav-tab {
-    padding: 10px 18px;
-    font-size: 0.9em;
-  }
-  
-  .mobile-logo,
-  .mobile-product {
-    height: 40px;
-  }
-  
-  .mobile-orders-value {
-    font-size: 1.5em;
-  }
-}
-
-@media (max-width: 480px) {
-  .title-wrap h1 {
-    font-size: 1.2em;
-  }
-  
-  .title-wrap h2 {
-    font-size: 0.75em;
-    margin-bottom: 12px;
-  }
-  
-  .nav-tabs {
-    gap: 6px;
-  }
-  
-  .nav-tab {
-    padding: 8px 14px;
-    font-size: 0.8em;
-  }
-  
-  .mobile-orders-value {
-    font-size: 1.3em;
-  }
-  
-  .mobile-orders-label {
-    font-size: 0.6em;
-  }
-  
-  .mobile-orders-updated {
-    font-size: 0.5em;
-  }
-}
-
-/* =========================================
-   IFRAMES
+   IFRAME WRAPPER
 ========================================= */
 .iframe-wrapper {
   display: none;
+  width: 100%;
   height: 100vh;
-  overflow: hidden;
+  position: relative;
 }
 
 .iframe-wrapper.active {
   display: block;
 }
 
-body.kiosk-active .iframe-wrapper {
-  height: 100vh !important;
-}
-
 iframe {
   width: 100%;
   height: 100%;
   border: none;
-  scrollbar-width: none;
 }
 
-iframe::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+/* =========================================
+   OVERLAY (for mobile)
+========================================= */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* =========================================
+   MOBILE RESPONSIVE
+========================================= */
+@media (max-width: 768px) {
+  .sidebar.open ~ .main-content {
+    margin-left: 0;
+  }
+  
+  .hamburger-btn {
+    width: 45px;
+    height: 45px;
+    left: 15px;
+    top: 15px;
+  }
+  
+  .hamburger-btn span {
+    width: 20px;
+  }
+  
+  .sidebar-title {
+    font-size: 1.1em;
+  }
+  
+  .orders-value {
+    font-size: 1.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 260px;
+    transform: translateX(-260px);
+  }
+  
+  .sidebar-logo {
+    max-width: 140px;
+  }
+  
+  .nav-item {
+    padding: 12px 20px;
+    font-size: 0.9em;
+  }
 }
 </style>
-
 </head>
 
 <body>
 
-<!-- HEADER -->
-<nav class="main-nav expanded" id="nav">
+<!-- HAMBURGER BUTTON -->
+<button class="hamburger-btn" id="hamburgerBtn">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
 
-  <div class="header-content">
-    <div class="title-wrap">
-      <h1>Rowe Casa Organics</h1>
-      <h2>Operational Dashboards</h2>
-    </div>
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- MOBILE HEADER ROW -->
-    <div class="mobile-header-row">
-      <img src="logo.png" alt="Logo" class="mobile-logo">
-      
-      <div class="mobile-orders-counter">
-        <div class="mobile-orders-label">Today's Orders</div>
-        <div class="mobile-orders-value" id="mobileOrderCount">--</div>
-        <div class="mobile-orders-updated" id="mobileOrderUpdated">Loading...</div>
-      </div>
-      
-      <img id="mobileProductImage" src="tartcherry.png" class="mobile-product">
-    </div>
-
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-tab="fulfillment">Fulfillment KPI</button>
-      <button class="nav-tab" data-tab="shipping">Shipping Leaderboard</button>
-      <button class="nav-tab" data-tab="orders">Orders Overview</button>
-    </div>
+<!-- SIDEBAR NAVIGATION -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="logo.png" alt="RCO Logo" class="sidebar-logo">
+    <div class="sidebar-title">RCO Metrics</div>
+    <div class="sidebar-subtitle">Operational Dashboards</div>
   </div>
-
-  <!-- DESKTOP MEDIA LAYER -->
-  <div class="media-layer">
-    <div class="orders-counter" id="ordersCounter">
-      <div class="orders-counter-label">Today's Orders</div>
-      <div class="orders-counter-value" id="orderCount">--</div>
-      <div class="orders-counter-updated" id="orderUpdated">Loading...</div>
-    </div>
-
-    <div class="logo-media">
-      <img src="logo.png" alt="Rowe Casa Organics Logo">
-    </div>
-
-    <div class="product-media">
-      <div class="product-label">Top Products</div>
-      <img id="productImage" src="tartcherry.png">
-    </div>
+  
+  <div class="sidebar-nav">
+    <a class="nav-item active" data-tab="fulfillment">
+      <span class="nav-icon">📦</span>
+      Fulfillment KPI
+    </a>
+    <a class="nav-item" data-tab="shipping">
+      <span class="nav-icon">🚚</span>
+      Shipping Leaderboard
+    </a>
+    <a class="nav-item" data-tab="orders">
+      <span class="nav-icon">📊</span>
+      Orders Overview
+    </a>
   </div>
-
-  <div class="nav-toggle-wrap" onclick="toggleHeader()">
-    <div class="nav-toggle"></div>
+  
+  <div class="sidebar-footer">
+    <div class="orders-widget">
+      <div class="orders-label">Today's Orders</div>
+      <div class="orders-value" id="orderCount">--</div>
+      <div class="orders-updated" id="orderUpdated">Loading...</div>
+    </div>
+    
+    <div class="product-carousel">
+      <img id="productImage" src="tartcherry.png" alt="Product">
+    </div>
+    
+    <button class="sign-out-btn" onclick="signOutUser()">Sign Out</button>
   </div>
-  <button class="sign-out-btn" onclick="signOutUser()">Sign Out</button>
 </nav>
 
-<!-- IFRAMES -->
-<div id="fulfillment-frame" class="iframe-wrapper active">
-  <iframe src="fulfillment.html"></iframe>
-</div>
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <!-- IFRAMES -->
+  <div id="fulfillment-frame" class="iframe-wrapper active">
+    <iframe src="fulfillment.html"></iframe>
+  </div>
 
-<div id="shipping-frame" class="iframe-wrapper">
-  <iframe src="shipping.html"></iframe>
-</div>
+  <div id="shipping-frame" class="iframe-wrapper">
+    <iframe src="shipping.html"></iframe>
+  </div>
 
-<div id="orders-frame" class="iframe-wrapper">
-  <iframe src="orders.html"></iframe>
+  <div id="orders-frame" class="iframe-wrapper">
+    <iframe src="orders.html"></iframe>
+  </div>
 </div>
 
 <script>
-const nav = document.getElementById("nav");
-const productImage = document.getElementById("productImage");
-const mobileProductImage = document.getElementById("mobileProductImage");
+// =========================================
+// SIDEBAR TOGGLE
+// =========================================
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
 
-// Google Sheets (Orders Counter)
-const SHEET_ID = '1H9eeS3zv3DOj7ETw6DgF8m_n1PirPjVKziiISw95khI';
-const SHEET_GID = '1592344464';
+hamburgerBtn.addEventListener('click', () => {
+  hamburgerBtn.classList.toggle('open');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('active');
+});
 
-function toggleHeader() {
-  nav.classList.toggle("collapsed");
-  nav.classList.toggle("expanded");
-}
+overlay.addEventListener('click', () => {
+  hamburgerBtn.classList.remove('open');
+  sidebar.classList.remove('open');
+  overlay.classList.remove('active');
+});
 
-/* Product carousel */
+// =========================================
+// NAVIGATION
+// =========================================
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const targetTab = item.dataset.tab;
+
+    // Update active state
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+
+    // Switch iframe
+    document.querySelectorAll('.iframe-wrapper').forEach(f => f.classList.remove('active'));
+    document.getElementById(`${targetTab}-frame`).classList.add('active');
+
+    // Close sidebar on mobile
+    if (window.innerWidth <= 768) {
+      hamburgerBtn.classList.remove('open');
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    }
+  });
+});
+
+// =========================================
+// PRODUCT CAROUSEL
+// =========================================
 const products = ["tartcherry.png", "elderberry.png", "hairspritz.png"];
 let idx = 0;
+const productImage = document.getElementById("productImage");
 
 setInterval(() => {
-  // Desktop product carousel
   if (productImage) {
     productImage.classList.add("fade-out");
     setTimeout(() => {
@@ -600,33 +467,13 @@ setInterval(() => {
       productImage.classList.remove("fade-out");
     }, 200);
   }
-  
-  // Mobile product carousel
-  if (mobileProductImage) {
-    mobileProductImage.classList.add("fade-out");
-    setTimeout(() => {
-      mobileProductImage.src = products[idx];
-      mobileProductImage.classList.remove("fade-out");
-    }, 200);
-  }
 }, 5000);
 
-/* Tab switching */
-document.querySelectorAll('.nav-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    const targetTab = tab.dataset.tab;
-
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-
-    document.querySelectorAll('.iframe-wrapper').forEach(f => f.classList.remove('active'));
-    document.getElementById(`${targetTab}-frame`).classList.add('active');
-  });
-});
-
-/* =========================================
-   FETCH TODAY'S ORDERS FROM GOOGLE SHEET
-========================================= */
+// =========================================
+// ORDERS COUNTER
+// =========================================
+const SHEET_ID = '1H9eeS3zv3DOj7ETw6DgF8m_n1PirPjVKziiISw95khI';
+const SHEET_GID = '1592344464';
 
 async function fetchGvizTable() {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
@@ -648,45 +495,86 @@ function cellValue(table, row, col) {
 }
 
 async function updateOrderCount() {
-  const counter = document.getElementById('ordersCounter');
   const countEl = document.getElementById('orderCount');
   const updatedEl = document.getElementById('orderUpdated');
-  
-  const mobileCountEl = document.getElementById('mobileOrderCount');
-  const mobileUpdatedEl = document.getElementById('mobileOrderUpdated');
 
   try {
-    if (counter) counter.classList.add('loading');
-
     const table = await fetchGvizTable();
-
     const updated = cellValue(table, 0, 0);
     const orders = cellValue(table, 0, 1);
 
-    // Update desktop elements
     if (countEl) countEl.textContent = (orders ?? '--');
     if (updatedEl) updatedEl.textContent = (updated ?? 'Unknown');
-    
-    // Update mobile elements
-    if (mobileCountEl) mobileCountEl.textContent = (orders ?? '--');
-    if (mobileUpdatedEl) mobileUpdatedEl.textContent = (updated ?? 'Unknown');
-    
   } catch (err) {
     console.error('Order counter error:', err);
     if (countEl) countEl.textContent = 'Error';
     if (updatedEl) updatedEl.textContent = 'Failed to load';
-    if (mobileCountEl) mobileCountEl.textContent = 'Error';
-    if (mobileUpdatedEl) mobileUpdatedEl.textContent = 'Failed to load';
-  } finally {
-    if (counter) counter.classList.remove('loading');
   }
 }
 
 updateOrderCount();
 setInterval(updateOrderCount, 600000);
+
+// =========================================
+// SIGN OUT FUNCTION
+// =========================================
+window.signOutUser = async function() {
+  try {
+    // If using Firebase, this will be available from auth-check.js
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      await firebase.auth().signOut();
+    }
+    window.location.replace('login.html');
+  } catch (error) {
+    console.error('Sign out error:', error);
+    alert('Failed to sign out. Please try again.');
+  }
+}
 </script>
-<!-- Firebase Authentication Check -->
-<script type="module" src="auth-check.js"></script>
+
+<!-- Firebase Authentication Check - Only load if not already authenticated -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDEn7ooJJ1zATM5oEnx3ByDiOFTFxr_JiA",
+  authDomain: "rco-metrics-d0f3b.firebaseapp.com",
+  projectId: "rco-metrics-d0f3b",
+  storageBucket: "rco-metrics-d0f3b.firebasestorage.app",
+  messagingSenderId: "1021645263850",
+  appId: "1:1021645263850:web:dfd5c7cd0bd99762679893",
+  measurementId: "G-DR5MLDL5BG"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+let hasCheckedAuth = false;
+
+onAuthStateChanged(auth, (user) => {
+  if (hasCheckedAuth) return;
+  hasCheckedAuth = true;
+
+  if (!user) {
+    console.log('No user signed in, redirecting to login...');
+    window.location.replace('login.html');
+  } else {
+    console.log('Signed in as:', user.email);
+  }
+});
+
+window.signOutUser = async function() {
+  try {
+    hasCheckedAuth = false;
+    await firebaseSignOut(auth);
+    window.location.replace('login.html');
+  } catch (error) {
+    console.error('Sign out error:', error);
+    alert('Failed to sign out. Please try again.');
+  }
+};
+</script>
 
 </body>
 </html>
